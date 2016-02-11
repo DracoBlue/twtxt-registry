@@ -1,0 +1,146 @@
+var md5 = require('md5');
+var TwtxtTxt = require('./twtxt-utils/TwtxtTxt');
+var urlUtils = require('url');
+var http = require('http');
+var https = require('https');
+
+var Storage = function(client) {
+
+  this.client = client;
+};
+
+Storage.prototype.addUrl = function(url, cb) {
+  var that = this;
+  that.client.create({
+    index: 'index',
+    type: 'users',
+    id: md5(url),
+    body: {
+      url: url
+    }
+  }, cb);
+};
+
+Storage.prototype.storeTweet = function(tweet, cb) {
+  var that = this;
+
+  that.client.update({
+    index: 'index',
+    type: 'tweets',
+    id: tweet.id,
+    body: tweet
+  }, function() {
+    that.client.create({
+      index: 'index',
+      type: 'tweets',
+      id: tweet.id,
+      body: tweet
+    }, cb);
+  });
+};
+
+Storage.prototype.forEachUrl = function(cb) {
+  var that = this;
+
+  var doScroll = function(scrollId) {
+    that.client.scroll({
+      scrollId: scrollId,
+      limit: 1,
+      type: 'users',
+      scroll: '30s'
+    }, function(error, response) {
+      response.hits.hits.forEach(function (hit) {
+        process.nextTick(function() {
+          cb(hit._source.url);
+        })
+      });
+
+      if (response.hits.hits.length) {
+        doScroll(scrollId);
+      }
+
+    });
+  };
+
+  that.client.search({
+    index: 'index',
+    scroll: '30s',
+    limit: 1,
+    type: 'users',
+    search_type: 'scan'
+  }, function(error, response) {
+    doScroll(response._scroll_id);
+  });
+};
+
+Storage.prototype.getTweetsByHashTag = function(hashTag, cb) {
+  var that = this;
+
+  that.client.search({
+    index: 'index',
+    type: 'tweets',
+    q: "hashTags:\"" + hashTag + "\"",
+    limit: 20
+  }, function(error, response) {
+    var tweets = [];
+    response.hits.hits.forEach(function(hit) {
+      tweets.push(hit._source);
+    });
+    cb(tweets);
+  });
+};
+
+Storage.prototype.getTweetsByMentions = function(twtxtUrl, cb) {
+  var that = this;
+
+  that.client.search({
+    index: 'index',
+    type: 'tweets',
+    q: "mentions:\"" + twtxtUrl + "\"",
+    limit: 20
+  }, function(error, response) {
+    var tweets = [];
+    response.hits.hits.forEach(function(hit) {
+      tweets.push(hit._source);
+    });
+    cb(tweets);
+  });
+};
+
+Storage.prototype.startUpdating = function() {
+  var that = this;
+
+  clearInterval(this.updatingInterval);
+
+  var updateAllUrls = function() {
+    that.forEachUrl(function(url) {
+      var client = http;
+      if (urlUtils.parse(url)['protocol'] === "https:") {
+        client = https;
+      }
+
+      client.get(url, function(res) {
+        var body = [];
+        res.on('data', function(chunk) {
+          body.push(chunk);
+        }).on('end', function() {
+          body = Buffer.concat(body).toString();
+
+          var txt = new TwtxtTxt(url, body);
+          txt.getTweets().forEach(function(tweet) {
+            that.storeTweet(tweet, function() {
+            });
+          });
+        });
+      }).on('error', function (e) {});
+    });
+  };
+
+  this.updatingInterval = setInterval(function() {
+    updateAllUrls();
+  }, 60000);
+
+  updateAllUrls();
+};
+
+module.exports = Storage;
