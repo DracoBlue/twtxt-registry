@@ -16,7 +16,7 @@ $ export PORT=8080
 $ export ELASTICSEARCH_HOST=localhost
 $ export ELASTICSEARCH_PORT=9200
 $ export MEMCACHED_HOST=localhost
-$ export MEMCACHED_PORT=9200
+$ export MEMCACHED_PORT=11211
 $ node src/server.js
 ```
 
