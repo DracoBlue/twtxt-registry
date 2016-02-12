@@ -1,13 +1,14 @@
 var plainApi = function(storage) {
   var express = require('express');
   var api = express.Router();
+  var url = require('url');
 
   api.use(function (req, res, next) {
     res.set('Content-Type', 'text/plain');
     next();
   });
 
-  api.get('/tag/:tag', function (req, res) {
+  api.get('/tags/:tag', function (req, res) {
     if (!req.params.tag) {
       res.sendStatus(400);
       res.end();
@@ -38,6 +39,7 @@ var plainApi = function(storage) {
   api.get('/mentions', function (req, res) {
     if (!req.query.url) {
       res.sendStatus(400);
+      res.send("`url` must be provided.");
       res.end();
       return;
     }
@@ -55,8 +57,21 @@ var plainApi = function(storage) {
   api.post('/users', function (req, res) {
     if (!req.query.url || !req.query.nickname) {
       res.sendStatus(400);
-      res.end();
+      res.send("`nickname` and `url` must be provided.");
       return;
+    }
+
+    if (!req.query.nickname.match(/^[A-Z0-9_-]+$/)) {
+      res.sendStatus(400);
+      res.send("`nickname` must match ^[A-Z0-9_-]+$");
+      return ;
+    }
+
+    var urlParts = url.parse(req.query.url);
+    if (!urlParts['hostname'] || !urlParts['protocol'] || (urlParts['protocol'] != 'https:' && urlParts['protocol'] != 'http:') ) {
+      res.sendStatus(400);
+      res.send("`url` must provide hostname and either protocol as http or https!");
+      return ;
     }
 
     storage.addUser(req.query.url, req.query.nickname, function () {

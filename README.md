@@ -50,10 +50,10 @@ http://workspaces.local/twtxt.txt	2016-02-09T12:57:59.000Z	@<buckket https://buc
 http://workspaces.local/twtxt.txt	2016-02-08T22:51:47.000Z	@<buckket https://buckket.org/twtxt.txt> looks nice ;)
 ```
 
-Retrieve a list of all tweets with a specific tag like `#twtxt` (e.g. <https://registry.twtxt.org/api/plain/tag/twtxt>):
+Retrieve a list of all tweets with a specific tag like `#twtxt` (e.g. <https://registry.twtxt.org/api/plain/tags/twtxt>):
 
 ``` console
-$ curl http://localhost:8080/api/plain/tag/twtxt
+$ curl http://localhost:8080/api/plain/tags/twtxt
 http://workspaces.local/twtxt.txt	2016-02-06T21:32:02.000Z	@erlehmann is messing with timestamps in @buckket #twtxt :)
 http://workspaces.local/twtxt.txt	2016-02-06T12:14:18.000Z	Simple nodejs script to convert your twitter timeline to twtxt: https://t.co/txnWsC5jvA ( find my #twtxt at https://t.co/uN1KDXwJ8B )
 ```
