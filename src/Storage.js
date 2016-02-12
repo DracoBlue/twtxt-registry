@@ -197,6 +197,7 @@ Storage.prototype.startUpdating = function() {
         path: urlParts['path'],
         method: 'GET',
         headers: {
+          "User-Agent": "twtxt-registry/dev"
         }
       };
 
