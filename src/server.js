@@ -26,11 +26,11 @@ var server = http.createServer(app).listen(port, function() {
   storage.startUpdating();
 });
 
-storage.addUrl("https://buckket.org/twtxt.txt", function() {
+storage.addUser("https://buckket.org/twtxt.txt", "buckket", function() {
 });
 
-storage.addUrl("https://buckket.org/twtxt_news.txt", function() {
+storage.addUser("https://buckket.org/twtxt_news.txt", "twtxt_news", function() {
 });
 
-storage.addUrl("https://dracoblue.net/twtxt.txt", function() {
+storage.addUser("https://dracoblue.net/twtxt.txt", "dracoblue", function() {
 });

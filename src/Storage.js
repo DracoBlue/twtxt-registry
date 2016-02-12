@@ -3,21 +3,26 @@ var TwtxtTxt = require('./twtxt-utils/TwtxtTxt');
 var urlUtils = require('url');
 var http = require('http');
 var https = require('https');
+var moment = require('moment');
 
 var Storage = function(client) {
 
   this.client = client;
 };
 
-Storage.prototype.addUrl = function(url, cb) {
+Storage.prototype.addUser = function(url, nickname, cb) {
   var that = this;
+  var user = {
+    url: url,
+    nickname: nickname,
+    timestamp: moment().toISOString()
+  };
+
   that.client.create({
     index: 'index',
     type: 'users',
     id: md5(url),
-    body: {
-      url: url
-    }
+    body: user
   }, cb);
 };
 
@@ -115,6 +120,36 @@ Storage.prototype.searchTweets = function(queryString, cb) {
   that.client.search({
     index: 'index',
     type: 'tweets',
+    body: body,
+    sort: 'timestamp:desc',
+    limit: 20
+  }, function(error, response) {
+    var tweets = [];
+    response.hits.hits.forEach(function(hit) {
+      tweets.push(hit._source);
+    });
+    cb(tweets);
+  });
+};
+
+Storage.prototype.searchUsers = function(queryString, cb) {
+  var that = this;
+
+  var body = {};
+
+  if (queryString) {
+    body = {
+      query: {
+        match: {
+          nickname: queryString
+        }
+      }
+    };
+  }
+
+  that.client.search({
+    index: 'index',
+    type: 'users',
     body: body,
     sort: 'timestamp:desc',
     limit: 20

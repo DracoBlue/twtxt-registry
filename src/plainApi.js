@@ -53,15 +53,26 @@ var plainApi = function(storage) {
   });
 
   api.post('/users', function (req, res) {
-    if (!req.query.url) {
+    if (!req.query.url || !req.query.nickname) {
       res.sendStatus(400);
       res.end();
       return;
     }
 
-    storage.addUrl(req.query.url, function () {
+    storage.addUser(req.query.url, req.query.nickname, function () {
       res.send("OK");
     });
+  });
+
+  api.get('/users', function (req, res) {
+    storage.searchUsers(req.query.q || '', function (users) {
+      var response = [];
+
+      users.forEach(function (user) {
+        response.push(user.url + "\t" + user.timestamp + "\t" + user.nickname);
+      });
+      res.send(response.join("\n"));
+    })
   });
 
   return api;
