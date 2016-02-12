@@ -79,7 +79,14 @@ Storage.prototype.getTweetsByHashTag = function(hashTag, cb) {
   that.client.search({
     index: 'index',
     type: 'tweets',
-    q: "hashTags:\"" + hashTag + "\"",
+    sort: 'timestamp:desc',
+    body: {
+      query: {
+        match: {
+          hashTags: hashTag
+        }
+      }
+    },
     limit: 20
   }, function(error, response) {
     var tweets = [];
@@ -90,13 +97,51 @@ Storage.prototype.getTweetsByHashTag = function(hashTag, cb) {
   });
 };
 
+Storage.prototype.searchTweets = function(queryString, cb) {
+  var that = this;
+
+  var body = {};
+
+  if (queryString) {
+    body = {
+      query: {
+        match: {
+          text: queryString
+        }
+      }
+    };
+  }
+
+  that.client.search({
+    index: 'index',
+    type: 'tweets',
+    body: body,
+    sort: 'timestamp:desc',
+    limit: 20
+  }, function(error, response) {
+    var tweets = [];
+    response.hits.hits.forEach(function(hit) {
+      tweets.push(hit._source);
+    });
+    cb(tweets);
+  });
+};
+
+
 Storage.prototype.getTweetsByMentions = function(twtxtUrl, cb) {
   var that = this;
 
   that.client.search({
     index: 'index',
     type: 'tweets',
-    q: "mentions:\"" + twtxtUrl + "\"",
+    sort: 'timestamp:desc',
+    body: {
+      query: {
+        match: {
+          mentions: twtxtUrl
+        }
+      }
+    },
     limit: 20
   }, function(error, response) {
     var tweets = [];

@@ -17,13 +17,29 @@ $ export ELASTICSEARCH_PORT=9200
 $ node src/server.js
 ```
 
-## Example API calls
+## Example API calls for the Plain-Text-Api
 
 Add a new Twtxt User to the Registry:
 
 ``` console
 $ curl -X POST http://localhost:8080/api/plain/users?url=https://dracoblue.net/twtxt.txt
 OK
+```
+
+See latest tweets in the Registry:
+
+``` console
+$ curl http://localhost:8080/api/plain/tweets
+http://workspaces.local/twtxt.txt	2016-02-06T21:32:02.000Z	@erlehmann is messing with timestamps in @buckket #twtxt :)
+http://workspaces.local/twtxt.txt	2016-02-06T12:14:18.000Z	Simple nodejs script to convert your twitter timeline to twtxt: https://t.co/txnWsC5jvA ( find my #twtxt at https://t.co/uN1KDXwJ8B )
+```
+
+Search for tweets in the Registry:
+
+``` console
+$ curl http://localhost:8080/api/plain/tweets?q=twtxt
+https://buckket.org/twtxt.txt	2016-02-09T12:42:26.000Z	Do we need an IRC channel for twtxt?
+https://buckket.org/twtxt.txt	2016-02-09T12:42:12.000Z	Good Morning, twtxt-world!
 ```
 
 Retrieve a list of all mentions of a specific twtxt User (e.g. `https://buckket.org/twtxt.txt`):

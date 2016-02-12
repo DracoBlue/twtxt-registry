@@ -24,6 +24,17 @@ var plainApi = function(storage) {
     })
   });
 
+  api.get('/tweets', function (req, res) {
+    storage.searchTweets(req.query.q || '', function (tweets) {
+      var response = [];
+
+      tweets.forEach(function (tweet) {
+        response.push(tweet.author_url + "\t" + tweet.timestamp + "\t" + tweet.text);
+      });
+      res.send(response.join("\n"));
+    })
+  });
+
   api.get('/mentions', function (req, res) {
     if (!req.query.url) {
       res.sendStatus(400);
