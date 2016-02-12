@@ -238,7 +238,7 @@ Storage.prototype.startUpdating = function() {
 
   this.updatingInterval = setInterval(function() {
     updateAllUrls();
-  }, 60000);
+  }, 5 * 60000);
 
   updateAllUrls();
 };
