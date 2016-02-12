@@ -50,7 +50,6 @@ Storage.prototype.forEachUser = function(cb) {
   var doScroll = function(scrollId) {
     that.client.scroll({
       scrollId: scrollId,
-      limit: 1,
       type: 'users',
       scroll: '30s'
     }, function(error, response) {
@@ -70,7 +69,7 @@ Storage.prototype.forEachUser = function(cb) {
   that.client.search({
     index: 'index',
     scroll: '30s',
-    limit: 1,
+    size: 1,
     type: 'users',
     search_type: 'scan'
   }, function(error, response) {
@@ -85,14 +84,9 @@ Storage.prototype.getTweetsByHashTag = function(hashTag, cb) {
     index: 'index',
     type: 'tweets',
     sort: 'timestamp:desc',
-    body: {
-      query: {
-        match: {
-          hashTags: hashTag
-        }
-      }
-    },
-    limit: 20
+    /* FIXME: there must be a better way then a q search */
+    q: 'hashTags:"#' + hashTag + '"',
+    size: 20
   }, function(error, response) {
     var tweets = [];
     response.hits.hits.forEach(function(hit) {
@@ -122,7 +116,7 @@ Storage.prototype.searchTweets = function(queryString, cb) {
     type: 'tweets',
     body: body,
     sort: 'timestamp:desc',
-    limit: 20
+    size: 20
   }, function(error, response) {
     var tweets = [];
     response.hits.hits.forEach(function(hit) {
@@ -152,7 +146,7 @@ Storage.prototype.searchUsers = function(queryString, cb) {
     type: 'users',
     body: body,
     sort: 'timestamp:desc',
-    limit: 20
+    size: 20
   }, function(error, response) {
     var tweets = [];
     response.hits.hits.forEach(function(hit) {
@@ -170,14 +164,9 @@ Storage.prototype.getTweetsByMentions = function(twtxtUrl, cb) {
     index: 'index',
     type: 'tweets',
     sort: 'timestamp:desc',
-    body: {
-      query: {
-        match: {
-          mentions: twtxtUrl
-        }
-      }
-    },
-    limit: 20
+    /* FIXME: there must be a better way then a q search */
+    q: 'mentions:"' + twtxtUrl + '"',
+    size: 20
   }, function(error, response) {
     var tweets = [];
     response.hits.hits.forEach(function(hit) {
