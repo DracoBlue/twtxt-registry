@@ -2,9 +2,10 @@ var moment = require('moment');
 var urlUtils = require('url');
 var md5 = require('md5');
 
-var TwtxtTxt = function(url, body) {
+var TwtxtTxt = function(url, nickname, body) {
   this.body = body;
   this.url = url;
+  this.nickname = nickname;
 
   this.setTweetsByBody(this.body);
 };
@@ -52,6 +53,7 @@ TwtxtTxt.prototype.setTweetsByBody = function(body) {
           hashTags: hashTags,
           mentions: mentions,
           author_url: that.url,
+          author_nickname: that.nickname,
           body: body,
           text: text
         });

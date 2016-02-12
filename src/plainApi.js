@@ -3,6 +3,14 @@ var plainApi = function(storage) {
   var api = express.Router();
   var url = require('url');
 
+  var renderAuthorForTweet = function(tweet) {
+    if (tweet.author_nickname) {
+      return '@<' + tweet.author_nickname + ' ' + tweet.author_url + '>';
+    }
+
+    return '@<' + tweet.author_url + '>';
+  };
+
   api.use(function (req, res, next) {
     res.set('Content-Type', 'text/plain');
     next();
@@ -19,7 +27,7 @@ var plainApi = function(storage) {
       var response = [];
 
       tweets.forEach(function (tweet) {
-        response.push(tweet.author_url + "\t" + tweet.timestamp + "\t" + tweet.text);
+        response.push(renderAuthorForTweet(tweet) + "\t" + tweet.timestamp + "\t" + tweet.text);
       });
       res.send(response.join("\n"));
     })
@@ -30,7 +38,7 @@ var plainApi = function(storage) {
       var response = [];
 
       tweets.forEach(function (tweet) {
-        response.push(tweet.author_url + "\t" + tweet.timestamp + "\t" + tweet.text);
+        response.push(renderAuthorForTweet(tweet) + "\t" + tweet.timestamp + "\t" + tweet.text);
       });
       res.send(response.join("\n"));
     })
@@ -48,7 +56,7 @@ var plainApi = function(storage) {
       var response = [];
 
       tweets.forEach(function (tweet) {
-        response.push(tweet.author_url + "\t" + tweet.timestamp + "\t" + tweet.text);
+        response.push(renderAuthorForTweet(tweet) + "\t" + tweet.timestamp + "\t" + tweet.text);
       });
       res.send(response.join("\n"));
     })
