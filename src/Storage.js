@@ -5,9 +5,10 @@ var http = require('http');
 var https = require('https');
 var moment = require('moment');
 
-var Storage = function(client) {
+var Storage = function(client, memcached) {
 
   this.client = client;
+  this.memcached = memcached;
 };
 
 Storage.prototype.addUser = function(url, nickname, cb) {
@@ -184,24 +185,54 @@ Storage.prototype.startUpdating = function() {
   var updateAllUrls = function() {
     that.forEachUser(function(user) {
       var client = http;
-      if (urlUtils.parse(user.url)['protocol'] === "https:") {
+      var urlParts = urlUtils.parse(user.url);
+
+      if (urlParts['protocol'] === "https:") {
         client = https;
       }
 
-      client.get(user.url, function(res) {
-        var body = [];
-        res.on('data', function(chunk) {
-          body.push(chunk);
-        }).on('end', function() {
-          body = Buffer.concat(body).toString();
+      var options = {
+        hostname: urlParts['hostname'],
+        port: urlParts['port'] || (urlParts['protocol'] === "https:" ? 443 : 80),
+        path: urlParts['path'],
+        method: 'GET',
+        headers: {
+        }
+      };
 
-          var txt = new TwtxtTxt(user.url, user.nickname, body);
-          txt.getTweets().forEach(function(tweet) {
-            that.storeTweet(tweet, function() {
+      var key = md5(user.url);
+
+      that.memcached.get('last-modified-since-' + key, function(err, memcacheData) {
+
+        if (memcacheData) {
+          options.headers['If-Modified-Since'] = memcacheData;
+        }
+
+        var req = client.request(options, function(res) {
+          var body = [];
+          res.on('data', function(chunk) {
+            body.push(chunk);
+          }).on('end', function() {
+            if (res.statusCode == 304) {
+              return ;
+            }
+            body = Buffer.concat(body).toString();
+
+            var txt = new TwtxtTxt(user.url, user.nickname, body);
+            txt.getTweets().forEach(function(tweet) {
+              that.storeTweet(tweet, function() {
+              });
             });
+
+            if (res.headers['last-modified']) {
+              that.memcached.set('last-modified-since-' + key, res.headers['last-modified'], 60*60*24, function() {
+              });
+            }
           });
-        });
-      }).on('error', function (e) {});
+
+        }).on('error', function (e) {});
+        req.end();
+      });
     });
   };
 

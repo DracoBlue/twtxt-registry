@@ -5,6 +5,7 @@ A small registry server for twtxt, which allows to query for mentions and hash t
 ## Prerequisites
 
 * [elasticsearch](https://www.elastic.co/downloads/elasticsearch) server
+* memcached server
 * [npm](https://nodejs.org) installed
 
 ## Installation
@@ -14,6 +15,8 @@ $ npm install
 $ export PORT=8080
 $ export ELASTICSEARCH_HOST=localhost
 $ export ELASTICSEARCH_PORT=9200
+$ export MEMCACHED_HOST=localhost
+$ export MEMCACHED_PORT=9200
 $ node src/server.js
 ```
 

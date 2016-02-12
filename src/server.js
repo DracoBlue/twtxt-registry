@@ -4,6 +4,7 @@ var elasticsearch = require('elasticsearch');
 var Storage = require('./Storage');
 var plainApi = require('./plainApi');
 var http = require('http');
+var Memcached = require('memcached');
 
 // Create an express instance and set a port variable
 var app = express();
@@ -16,7 +17,8 @@ var storage = new Storage(
   new elasticsearch.Client({
     host: (process.env.ELASTICSEARCH_HOST || "localhost") + ":" + (process.env.ELASTICSEARCH_PORT || "9200"),
     log: 'warning'
-  })
+  }),
+  new Memcached((process.env.MEMCACHED_HOST || "localhost") + ":" + (process.env.MEMCACHED_PORT || "11211"))
 );
 
 app.use('/api/plain/', plainApi(storage));

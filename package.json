@@ -14,6 +14,7 @@
     "elasticsearch": "^10.1.3",
     "express": "~4.9.7",
     "md5": "^2.0.0",
+    "memcached": "^2.2.1",
     "moment": "^2.11.2"
   },
   "author": "DracoBlue <JanS@DracoBlue.de>",
