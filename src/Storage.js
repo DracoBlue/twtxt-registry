@@ -44,7 +44,7 @@ Storage.prototype.storeTweet = function(tweet, cb) {
   });
 };
 
-Storage.prototype.forEachUrl = function(cb) {
+Storage.prototype.forEachUser = function(cb) {
   var that = this;
 
   var doScroll = function(scrollId) {
@@ -56,7 +56,7 @@ Storage.prototype.forEachUrl = function(cb) {
     }, function(error, response) {
       response.hits.hits.forEach(function (hit) {
         process.nextTick(function() {
-          cb(hit._source.url);
+          cb(hit._source);
         })
       });
 
@@ -193,20 +193,20 @@ Storage.prototype.startUpdating = function() {
   clearInterval(this.updatingInterval);
 
   var updateAllUrls = function() {
-    that.forEachUrl(function(url) {
+    that.forEachUser(function(user) {
       var client = http;
-      if (urlUtils.parse(url)['protocol'] === "https:") {
+      if (urlUtils.parse(user.url)['protocol'] === "https:") {
         client = https;
       }
 
-      client.get(url, function(res) {
+      client.get(user.url, function(res) {
         var body = [];
         res.on('data', function(chunk) {
           body.push(chunk);
         }).on('end', function() {
           body = Buffer.concat(body).toString();
 
-          var txt = new TwtxtTxt(url, body);
+          var txt = new TwtxtTxt(user.url, user.nickname, body);
           txt.getTweets().forEach(function(tweet) {
             that.storeTweet(tweet, function() {
             });
