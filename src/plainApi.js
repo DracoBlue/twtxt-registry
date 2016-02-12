@@ -69,9 +69,9 @@ var plainApi = function(storage) {
       return;
     }
 
-    if (!req.query.nickname.match(/^[A-Z0-9_-]+$/)) {
+    if (!req.query.nickname.match(/^[A-Za-z0-9_-]+$/)) {
       res.status(400);
-      res.send("`nickname` must match ^[A-Z0-9_-]+$");
+      res.send("`nickname` must match ^[A-Za-z0-9_-]+$");
       return ;
     }
 
