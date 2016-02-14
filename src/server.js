@@ -32,7 +32,8 @@ app.get('/', function (req, res) {
     "</head>",
     "<body>",
     "<h1>Twtxt Registry</h1>",
-    'This is a hosted registry for <a href="https://github.com/buckket/twtxt">https://github.com/buckket/twtxt</a>. The registry software is developed by <a href="https://dracoblue.net">dracoblue</a> and you may find the source code at <a href="https://github.com/DracoBlue/twtxt-registry">https://github.com/DracoBlue/twtxt-registry</a>.',
+    '<p>This is a hosted registry for <a href="https://github.com/buckket/twtxt">https://github.com/buckket/twtxt</a>. The registry software is developed by <a href="https://dracoblue.net">dracoblue</a> and you may find the source code at <a href="https://github.com/DracoBlue/twtxt-registry">https://github.com/DracoBlue/twtxt-registry</a>.</p>',
+    '<p>The api doc can be found at <a href="/swagger-ui/">/swagger-ui/</a>.</p>',
     "<body>",
     "</html>"
   ];
