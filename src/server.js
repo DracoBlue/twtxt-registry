@@ -23,6 +23,23 @@ var storage = new Storage(
 
 app.use('/api/plain/', plainApi(storage));
 
+app.get('/', function (req, res) {
+  var response = [
+    "<!DOCTYPE html>",
+    "<html>",
+    "<head>",
+    "<title>twtxt registry</title>",
+    "</head>",
+    "<body>",
+    "<h1>Twtxt Registry</h1>",
+    'This is a hosted registry for <a href="https://github.com/buckket/twtxt">https://github.com/buckket/twtxt</a>. The registry software is developed by <a href="https://dracoblue.net">dracoblue</a> and you may find the source code at <a href="https://github.com/DracoBlue/twtxt-registry">https://github.com/DracoBlue/twtxt-registry</a>.',
+    "<body>",
+    "</html>"
+  ];
+  res.set('Content-Type', 'text/html');
+  res.send(response.join("\n"));
+});
+
 var server = http.createServer(app).listen(port, function() {
   console.log('twtxt registry listening on port ' + port);
   storage.startUpdating();
