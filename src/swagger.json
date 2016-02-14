@@ -41,14 +41,14 @@
             "name": "nickname",
             "description": "Nickname at the registry",
             "required": true,
-            "schema": {"type": "string", "example": "buckket"}
+            "type": "string"
           },
           {
             "in": "query",
             "name": "url",
             "description": "Url of the twtxt.txt file",
             "required": true,
-            "schema": {"type": "string", "example": "https://buckket.org/twtxt.txt"}
+            "type": "string"
           }
         ]
       },
@@ -70,14 +70,14 @@
             "description": "Part of the nickname",
             "required": false,
             "default": "buckket",
-            "schema": {"type": "string"}
+            "type": "string"
           },
           {
             "in": "query",
             "name": "page",
             "description": "Page to query for",
             "required": false,
-            "schema": {"type": "number"}
+            "type": "number"
           }
         ]
       }
@@ -101,14 +101,14 @@
             "description": "Url of the twtxt.txt file",
             "default": "https://buckket.org/twtxt.txt",
             "required": true,
-            "schema": {"type": "string"}
+            "type": "string"
           },
           {
             "in": "query",
             "name": "page",
             "description": "Page to query for",
             "required": false,
-            "schema": {"type": "number"}
+            "type": "number"
           }
         ]
       }
@@ -132,14 +132,14 @@
             "description": "Search for tweets",
             "required": false,
             "default": "twtxt",
-            "schema": {"type": "string"}
+            "type": "string"
           },
           {
             "in": "query",
             "name": "page",
             "description": "Page to query for",
             "required": false,
-            "schema": {"type": "number"}
+            "type": "number"
           }
         ]
       }
@@ -162,7 +162,7 @@
             "name": "tag",
             "description": "The hash tag",
             "required": true,
-            "schema": {"type": "string"},
+            "type": "string",
             "default": "twtxt"
           },
           {
@@ -170,7 +170,7 @@
             "name": "page",
             "description": "Page to query for",
             "required": false,
-            "schema": {"type": "number"}
+            "type": "number"
           }
         ]
       }
