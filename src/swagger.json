@@ -1,0 +1,179 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a registry server for twtxt. Sourcecode at [Github](https://github.com/DracoBlue/twtxt-registry).",
+    "version": "1.0.0",
+    "title": "Twtxt Registry",
+    "termsOfService": "https://dracoblue.net/about/#nutzungsbedingungen",
+    "contact": {"email": "JanS@DracoBlue.de"},
+    "license": {
+      "name": "MIT",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "tweets",
+      "description": "Tweets in this twtxt registry"
+    },
+    {
+      "name": "users",
+      "description": "Users in this twtxt registry"
+    }
+  ],
+  "paths": {
+    "/plain/users": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Add a user to the registry",
+        "description": "",
+        "operationId": "addUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "nickname",
+            "description": "Nickname at the registry",
+            "required": true,
+            "schema": {"type": "string", "example": "buckket"}
+          },
+          {
+            "in": "query",
+            "name": "url",
+            "description": "Url of the twtxt.txt file",
+            "required": true,
+            "schema": {"type": "string", "example": "https://buckket.org/twtxt.txt"}
+          }
+        ]
+      },
+      "get": {
+        "tags": ["users"],
+        "summary": "Finds users",
+        "description": "",
+        "operationId": "findUsers",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "description": "Part of the nickname",
+            "required": false,
+            "default": "buckket",
+            "schema": {"type": "string"}
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Page to query for",
+            "required": false,
+            "schema": {"type": "number"}
+          }
+        ]
+      }
+    },
+    "/plain/mentions": {
+      "get": {
+        "tags": ["tweets"],
+        "summary": "Finds tweets by mention",
+        "description": "",
+        "operationId": "findMentions",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "url",
+            "description": "Url of the twtxt.txt file",
+            "default": "https://buckket.org/twtxt.txt",
+            "required": true,
+            "schema": {"type": "string"}
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Page to query for",
+            "required": false,
+            "schema": {"type": "number"}
+          }
+        ]
+      }
+    },
+    "/plain/tweets": {
+      "get": {
+        "tags": ["tweets"],
+        "summary": "Finds tweets by query",
+        "description": "",
+        "operationId": "findTweets",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "description": "Search for tweets",
+            "required": false,
+            "default": "twtxt",
+            "schema": {"type": "string"}
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Page to query for",
+            "required": false,
+            "schema": {"type": "number"}
+          }
+        ]
+      }
+    },
+    "/plain/tags/{tag}": {
+      "get": {
+        "tags": ["tweets"],
+        "summary": "Finds tweets by query",
+        "description": "",
+        "operationId": "find",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tag",
+            "description": "The hash tag",
+            "required": true,
+            "schema": {"type": "string"},
+            "default": "twtxt"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Page to query for",
+            "required": false,
+            "schema": {"type": "number"}
+          }
+        ]
+      }
+    }
+  }
+}

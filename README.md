@@ -22,6 +22,8 @@ $ node src/server.js
 
 ## Example API calls for the Plain-Text-Api
 
+You can see a demo running at <https://registry.twtxt.org> and a swagger-ui api doc at <https://registry.twtxt.org/swagger-ui/>.
+
 Add a new Twtxt User to the Registry:
 
 ``` console

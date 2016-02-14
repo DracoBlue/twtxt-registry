@@ -14,7 +14,8 @@
     "express": "~4.9.7",
     "md5": "^2.0.0",
     "memcached": "^2.2.1",
-    "moment": "^2.11.2"
+    "moment": "^2.11.2",
+    "swagger-ui": "^2.1.4"
   },
   "author": "DracoBlue <JanS@DracoBlue.de>",
   "license": "MIT",

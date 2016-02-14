@@ -40,6 +40,30 @@ app.get('/', function (req, res) {
   res.send(response.join("\n"));
 });
 
+var renderSwaggerHtml = function(req, res) {
+  var fs = require('fs');
+  var response = fs.readFileSync(__dirname + '/../node_modules/swagger-ui/dist/index.html').toString();
+  response = response.replace("http://petstore.swagger.io/v2/swagger.json", "/api/swagger.json");
+
+  res.set('Content-Type', 'text/html');
+  res.send(response);
+};
+
+app.get("/swagger-ui/index.html", renderSwaggerHtml);
+app.get("/swagger-ui/", renderSwaggerHtml);
+
+app.get("/api/swagger.json", function(req, res) {
+  var fs = require('fs');
+  res.set('Content-Type', 'application/json');
+  var response = JSON.parse(fs.readFileSync(__dirname + '/swagger.json').toString());
+  var info = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
+  response.info.version = info.version || 'dev';
+  res.send(JSON.stringify(response));
+});
+
+// Set /public as our static content dir
+app.use("/swagger-ui/", express.static(__dirname + "/../node_modules/swagger-ui/dist/"));
+
 var server = http.createServer(app).listen(port, function() {
   console.log('twtxt registry listening on port ' + port);
   storage.startUpdating();
