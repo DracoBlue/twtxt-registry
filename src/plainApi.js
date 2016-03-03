@@ -23,7 +23,9 @@ var plainApi = function(storage) {
       return;
     }
 
-    storage.getTweetsByHashTag("#" + req.params.tag, function (tweets) {
+    var page = parseInt(req.query.page || 1, 10) || 1;
+
+    storage.getTweetsByHashTag("#" + req.params.tag, page, function (tweets) {
       var response = [];
 
       tweets.forEach(function (tweet) {
@@ -34,7 +36,9 @@ var plainApi = function(storage) {
   });
 
   api.get('/tweets', function (req, res) {
-    storage.searchTweets(req.query.q || '', function (tweets) {
+    var page = parseInt(req.query.page || 1, 10) || 1;
+
+    storage.searchTweets(req.query.q || '', page, function (tweets) {
       var response = [];
 
       tweets.forEach(function (tweet) {
@@ -52,7 +56,9 @@ var plainApi = function(storage) {
       return;
     }
 
-    storage.getTweetsByMentions(req.query.url, function (tweets) {
+    var page = parseInt(req.query.page || 1, 10) || 1;
+
+    storage.getTweetsByMentions(req.query.url, page, function (tweets) {
       var response = [];
 
       tweets.forEach(function (tweet) {
@@ -88,7 +94,9 @@ var plainApi = function(storage) {
   });
 
   api.get('/users', function (req, res) {
-    storage.searchUsers(req.query.q || '', function (users) {
+    var page = parseInt(req.query.page || 1, 10) || 1;
+
+    storage.searchUsers(req.query.q || '', page, function (users) {
       var response = [];
 
       users.forEach(function (user) {

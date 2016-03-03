@@ -78,7 +78,7 @@ Storage.prototype.forEachUser = function(cb) {
   });
 };
 
-Storage.prototype.getTweetsByHashTag = function(hashTag, cb) {
+Storage.prototype.getTweetsByHashTag = function(hashTag, page, cb) {
   var that = this;
 
   that.client.search({
@@ -87,7 +87,8 @@ Storage.prototype.getTweetsByHashTag = function(hashTag, cb) {
     sort: 'timestamp:desc',
     /* FIXME: there must be a better way then a q search */
     q: 'hashTags:"#' + hashTag + '"',
-    size: 20
+    size: 20,
+    from: (page * 20) - 20
   }, function(error, response) {
     var tweets = [];
     response.hits.hits.forEach(function(hit) {
@@ -97,7 +98,7 @@ Storage.prototype.getTweetsByHashTag = function(hashTag, cb) {
   });
 };
 
-Storage.prototype.searchTweets = function(queryString, cb) {
+Storage.prototype.searchTweets = function(queryString, page, cb) {
   var that = this;
 
   var body = {};
@@ -117,7 +118,8 @@ Storage.prototype.searchTweets = function(queryString, cb) {
     type: 'tweets',
     body: body,
     sort: 'timestamp:desc',
-    size: 20
+    size: 20,
+    from: (page * 20) - 20
   }, function(error, response) {
     var tweets = [];
     response.hits.hits.forEach(function(hit) {
@@ -127,7 +129,7 @@ Storage.prototype.searchTweets = function(queryString, cb) {
   });
 };
 
-Storage.prototype.searchUsers = function(queryString, cb) {
+Storage.prototype.searchUsers = function(queryString, page, cb) {
   var that = this;
 
   var body = {};
@@ -147,7 +149,8 @@ Storage.prototype.searchUsers = function(queryString, cb) {
     type: 'users',
     body: body,
     sort: 'timestamp:desc',
-    size: 20
+    size: 20,
+    from: (page * 20) - 20
   }, function(error, response) {
     var tweets = [];
     response.hits.hits.forEach(function(hit) {
@@ -158,7 +161,7 @@ Storage.prototype.searchUsers = function(queryString, cb) {
 };
 
 
-Storage.prototype.getTweetsByMentions = function(twtxtUrl, cb) {
+Storage.prototype.getTweetsByMentions = function(twtxtUrl, page, cb) {
   var that = this;
 
   that.client.search({
@@ -167,7 +170,8 @@ Storage.prototype.getTweetsByMentions = function(twtxtUrl, cb) {
     sort: 'timestamp:desc',
     /* FIXME: there must be a better way then a q search */
     q: 'mentions:"' + twtxtUrl + '"',
-    size: 20
+    size: 20,
+    from: (page * 20) - 20
   }, function(error, response) {
     var tweets = [];
     response.hits.hits.forEach(function(hit) {
