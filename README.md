@@ -67,7 +67,7 @@ Search for users in the Registry (e.g. <https://registry.twtxt.org/api/plain/use
 
 ``` console
 $ curl 'http://localhost:8080/api/plain/users?q=dracoblue'
-<@dracoblue https://dracoblue.net/twtxt.txt>	2016-02-09T12:42:26.000Z	dracoblue
+@<dracoblue https://dracoblue.net/twtxt.txt>	2016-02-09T12:42:26.000Z	dracoblue
 ```
 
 ## License
