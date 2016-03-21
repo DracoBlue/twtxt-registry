@@ -243,7 +243,7 @@ Storage.prototype.startUpdating = function() {
 
   this.updatingInterval = setInterval(function() {
     updateAllUrls();
-  }, 5 * 60000);
+  }, 864000); // 100 times a day
 
   updateAllUrls();
 };
