@@ -4,6 +4,7 @@ var urlUtils = require('url');
 var http = require('http');
 var https = require('https');
 var moment = require('moment');
+var fs = require('fs');
 var info = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
 info.version = info.version || 'dev';
 
