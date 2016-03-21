@@ -4,6 +4,8 @@ var urlUtils = require('url');
 var http = require('http');
 var https = require('https');
 var moment = require('moment');
+var info = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
+info.version = info.version || 'dev';
 
 var Storage = function(client, memcached) {
 
@@ -201,7 +203,7 @@ Storage.prototype.startUpdating = function() {
         path: urlParts['path'],
         method: 'GET',
         headers: {
-          "User-Agent": "twtxt-registry/dev"
+          "User-Agent": "twtxt-registry/" + info.version
         }
       };
 
