@@ -15,6 +15,7 @@
     "md5": "^2.0.0",
     "memcached": "^2.2.1",
     "moment": "^2.11.2",
+    "robots": "^0.9.4",
     "swagger-ui": "^2.1.4"
   },
   "author": "DracoBlue <JanS@DracoBlue.de>",

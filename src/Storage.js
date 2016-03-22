@@ -5,6 +5,7 @@ var http = require('http');
 var https = require('https');
 var moment = require('moment');
 var fs = require('fs');
+var robots = require('robots');
 var info = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
 info.version = info.version || 'dev';
 
@@ -12,6 +13,8 @@ var Storage = function(client, memcached) {
 
   this.client = client;
   this.memcached = memcached;
+  this.robotsParserUrlMap = {};
+  this.userAgent = "twtxt-registry/" + info.version;
 };
 
 Storage.prototype.addUser = function(url, nickname, cb) {
@@ -187,66 +190,119 @@ Storage.prototype.getTweetsByMentions = function(twtxtUrl, page, cb) {
 Storage.prototype.startUpdating = function() {
   var that = this;
 
+  var lastUpdate = 0;
+  var seconds = 60;
+
   clearInterval(this.updatingInterval);
 
   var updateAllUrls = function() {
+
+    lastUpdate++;
+
+    if (lastUpdate > (60 * 24 * 60) / seconds) {
+      lastUpdate = 0;
+    }
+
     that.forEachUser(function(user) {
       var client = http;
-      var urlParts = urlUtils.parse(user.url);
+      var options = urlUtils.parse(user.url);
 
-      if (urlParts['protocol'] === "https:") {
+      if (options['protocol'] === "https:") {
         client = https;
       }
 
-      var options = {
-        hostname: urlParts['hostname'],
-        port: urlParts['port'] || (urlParts['protocol'] === "https:" ? 443 : 80),
-        path: urlParts['path'],
-        method: 'GET',
-        headers: {
-          "User-Agent": "twtxt-registry/" + info.version
+      options.headers = that.userAgent;
+      options.method = 'GET';
+
+      var robotsTxtOptions = JSON.parse(JSON.stringify(options));
+      robotsTxtOptions.path = "/robots.txt";
+      robotsTxtOptions.pathname = "/robots.txt";
+      var robotsTxtUrl = urlUtils.format(robotsTxtOptions);
+
+      var fetchUrlIfAllowed = function(parser) {
+        /* default delay is 100 times a day */
+        var crawlDelay = Math.ceil((parser.getCrawlDelay(that.userAgent) || 900) / seconds);
+
+        //console.log("CrawlDelay: " + parser.getCrawlDelay(that.userAgent) + " for " + robotsTxtUrl);
+        //console.log("number is at", lastUpdate, "delay is at", crawlDelay,  "% is at", lastUpdate % crawlDelay);
+
+        if (crawlDelay != 0 && lastUpdate % crawlDelay != 0) {
+          //console.log("does not match crawlDelay! STOP");
+          return ;
         }
+
+        //console.log("does match crawlDelay! FETCH");
+
+        parser.canFetch(that.userAgent, options.path, function (access, url, reason) {
+          if (!access) {
+            console.error("not allowed to fetch", user.url, "because of " + robotsTxtUrl + ":", reason.type, " statusCode:", reason.statusCode);
+            return ;
+          }
+
+          var key = md5(user.url);
+
+          that.memcached.get('last-modified-since-' + key, function(err, memcacheData) {
+
+            if (memcacheData) {
+              options.headers['If-Modified-Since'] = memcacheData;
+            }
+
+            var req = client.request(options, function(res) {
+              var body = [];
+              res.on('data', function(chunk) {
+                body.push(chunk);
+              }).on('end', function() {
+                if (res.statusCode == 304) {
+                  return ;
+                }
+                body = Buffer.concat(body).toString();
+
+                var txt = new TwtxtTxt(user.url, user.nickname, body);
+                txt.getTweets().forEach(function(tweet) {
+                  that.storeTweet(tweet, function() {
+                  });
+                });
+
+                if (res.headers['last-modified']) {
+                  that.memcached.set('last-modified-since-' + key, res.headers['last-modified'], 60*60*24, function() {
+                  });
+                }
+              });
+
+            }).on('error', function (e) {});
+            req.end();
+          });
+        });
       };
 
-      var key = md5(user.url);
 
-      that.memcached.get('last-modified-since-' + key, function(err, memcacheData) {
+      if (!that.robotsParserUrlMap[robotsTxtUrl]) {
+        console.log("Creating robots.txt parser for:", robotsTxtUrl);
+        that.robotsParserUrlMap[robotsTxtUrl] = new robots.RobotsParser(
+          robotsTxtUrl,
+          that.userAgent,
+          function (parser, success) {
+            fetchUrlIfAllowed(that.robotsParserUrlMap[robotsTxtUrl]);
+          }
+        );
 
-        if (memcacheData) {
-          options.headers['If-Modified-Since'] = memcacheData;
-        }
-
-        var req = client.request(options, function(res) {
-          var body = [];
-          res.on('data', function(chunk) {
-            body.push(chunk);
-          }).on('end', function() {
-            if (res.statusCode == 304) {
-              return ;
-            }
-            body = Buffer.concat(body).toString();
-
-            var txt = new TwtxtTxt(user.url, user.nickname, body);
-            txt.getTweets().forEach(function(tweet) {
-              that.storeTweet(tweet, function() {
-              });
-            });
-
-            if (res.headers['last-modified']) {
-              that.memcached.set('last-modified-since-' + key, res.headers['last-modified'], 60*60*24, function() {
-              });
-            }
-          });
-
-        }).on('error', function (e) {});
-        req.end();
-      });
+        /* update the parser once in a day */
+        setInterval(function() {
+          console.log("Recreating robots.txt parser for:", robotsTxtUrl);
+          that.robotsParserUrlMap[robotsTxtUrl] = new robots.RobotsParser(
+            robotsTxtUrl,
+            that.userAgent
+          );
+        }, 24 * 60 * 60000);
+      } else {
+        fetchUrlIfAllowed(that.robotsParserUrlMap[robotsTxtUrl]);
+      }
     });
   };
 
   this.updatingInterval = setInterval(function() {
     updateAllUrls();
-  }, 864000); // 100 times a day
+  }, seconds * 1000); // check every minute for the crawl delay (fallback to 100 times a day!)
 
   updateAllUrls();
 };
