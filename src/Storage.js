@@ -211,7 +211,10 @@ Storage.prototype.startUpdating = function() {
         client = https;
       }
 
-      options.headers = that.userAgent;
+      options.headers = {
+        "User-Agent": that.userAgent
+      };
+      
       options.method = 'GET';
 
       var robotsTxtOptions = JSON.parse(JSON.stringify(options));
