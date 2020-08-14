@@ -15,7 +15,7 @@
     "express": "4.9.8",
     "md5": "2.0.0",
     "memcached": "2.2.1",
-    "moment": "2.11.2",
+    "moment": "2.27.0",
     "robots": "0.9.4",
     "swagger-ui": "2.1.4"
   },
