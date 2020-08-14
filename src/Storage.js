@@ -7,7 +7,7 @@ var moment = require('moment');
 var fs = require('fs');
 var robots = require('robots');
 var info = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
-info.version = info.version || 'dev';
+info.version = process.env.APP_VERSION || info.version || 'dev';
 
 var Storage = function(client, memcached) {
 
