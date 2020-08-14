@@ -5,10 +5,10 @@ var plainApi = function(storage) {
 
   var renderAuthorForTweet = function(tweet) {
     if (tweet.author_nickname) {
-      return '@<' + tweet.author_nickname + ' ' + tweet.author_url + '>';
+      return tweet.author_nickname + "\t" + tweet.author_url;
     }
 
-    return '@<' + tweet.author_url + '>';
+    return tweet.author_url + "\t" + tweet.author_url;
   };
 
   api.use(function (req, res, next) {
@@ -100,7 +100,7 @@ var plainApi = function(storage) {
       var response = [];
 
       users.forEach(function (user) {
-        response.push(user.url + "\t" + user.timestamp + "\t" + user.nickname);
+        response.push(user.nickname + "\t" + user.url + "\t" + user.timestamp);
       });
       res.send(response.join("\n"));
     })
