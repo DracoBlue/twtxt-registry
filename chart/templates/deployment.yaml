@@ -29,8 +29,23 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            - name: ELASTICSEARCH_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.elasticsearchSecret }}
+                  key: host
+            - name: MEMCACHED_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.memcachedSecret }}
+                  key: host
+            - name: PORT
+              value: "{{ .Values.service.port }}"
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
           livenessProbe:
             httpGet:
               path: /

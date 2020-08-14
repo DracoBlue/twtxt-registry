@@ -13,12 +13,15 @@ var port = process.env.PORT || 8080;
 // Disable etag headers on responses
 app.disable('etag');
 
+process.env.ELASTICSEARCH_HOST = process.env.ELASTICSEARCH_HOST || "http://localhost:9200";
+process.env.MEMCACHED_HOST = process.env.MEMCACHED_HOST || "localhost:11211";
+
 var storage = new Storage(
   new elasticsearch.Client({
-    host: (process.env.ELASTICSEARCH_HOST || "localhost") + ":" + (process.env.ELASTICSEARCH_PORT || "9200"),
+    host: process.env.ELASTICSEARCH_HOST,
     log: 'warning'
   }),
-  new Memcached((process.env.MEMCACHED_HOST || "localhost") + ":" + (process.env.MEMCACHED_PORT || "11211"))
+  new Memcached(process.env.MEMCACHED_HOST)
 );
 
 app.use('/api/plain/', plainApi(storage));
