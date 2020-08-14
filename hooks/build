@@ -1,0 +1,2 @@
+#!/bin/sh
+docker build --build-arg APP_VERSION=$SOURCE_BRANCH -f $DOCKERFILE_PATH -t $IMAGE_NAME .
