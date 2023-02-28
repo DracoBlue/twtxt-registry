@@ -1,4 +1,4 @@
-FROM node:12.16.2-alpine3.11
+FROM --platform=linux/amd64 node:16.19.1-alpine3.17
 RUN mkdir -p /usr/src/app/
 ADD package*.json /usr/src/app/
 ADD src /usr/src/app/src
