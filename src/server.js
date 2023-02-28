@@ -41,14 +41,20 @@ app.get('/', function (req, res) {
   res.send(response.join("\n"));
 });
 
-var renderSwaggerHtml = function(req, res) {
-  var response = fs.readFileSync(  './node_modules/swagger-ui/dist/index.html').toString();
-  response = response.replace("http://petstore.swagger.io/v2/swagger.json", "/api/swagger.json");
+var renderSwaggerInitializerJson = function(req, res) {
+  var response = fs.readFileSync(  './node_modules/swagger-ui-dist/swagger-initializer.js').toString();
+  response = response.replace("https://petstore.swagger.io/v2/swagger.json", "/api/swagger.json");
 
+  res.set('Content-Type', 'application/json');
+  res.send(response);
+};
+var renderSwaggerHtml = function(req, res) {
+  var response = fs.readFileSync(  './node_modules/swagger-ui-dist/index.html').toString();
   res.set('Content-Type', 'text/html');
   res.send(response);
 };
 
+app.get("/swagger-ui/swagger-initializer.js", renderSwaggerInitializerJson);
 app.get("/swagger-ui/index.html", renderSwaggerHtml);
 app.get("/swagger-ui/", renderSwaggerHtml);
 
@@ -61,7 +67,7 @@ app.get("/api/swagger.json", function(req, res) {
 });
 
 // Set /public as our static content dir
-app.use("/swagger-ui/", express.static("./node_modules/swagger-ui/dist/"));
+app.use("/swagger-ui/", express.static("./node_modules/swagger-ui-dist/"));
 
 var server = http.createServer(app).listen(port, function() {
   console.log('twtxt registry listening on port ' + port);

@@ -20,7 +20,7 @@
     "moment": "^2.29.4",
     "robots": "0.9.4",
     "stemmer": "^2.0.1",
-    "swagger-ui": "^4.16.1"
+    "swagger-ui-dist": "^4.16.1"
   },
   "author": "DracoBlue <JanS@DracoBlue.de>",
   "license": "MIT",
