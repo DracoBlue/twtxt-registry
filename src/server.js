@@ -1,10 +1,14 @@
-// Require our dependencies
-var express = require('express');
-var elasticsearch = require('elasticsearch');
-var Storage = require('./Storage');
-var plainApi = require('./plainApi');
-var http = require('http');
-var Memcached = require('memcached');
+import dotenv from 'dotenv';
+dotenv.config();
+
+import Storage from './Storage.mjs';
+import express from 'express';
+import {Datastore} from "@google-cloud/datastore";
+import http from "http";
+import fs from "fs";
+import plainApi from './plainApi.mjs';
+
+
 
 // Create an express instance and set a port variable
 var app = express();
@@ -13,15 +17,8 @@ var port = process.env.PORT || 8080;
 // Disable etag headers on responses
 app.disable('etag');
 
-process.env.ELASTICSEARCH_HOST = process.env.ELASTICSEARCH_HOST || "http://localhost:9200";
-process.env.MEMCACHED_HOST = process.env.MEMCACHED_HOST || "localhost:11211";
-
 var storage = new Storage(
-  new elasticsearch.Client({
-    host: process.env.ELASTICSEARCH_HOST,
-    log: 'warning'
-  }),
-  new Memcached(process.env.MEMCACHED_HOST)
+  new Datastore()
 );
 
 app.use('/api/plain/', plainApi(storage));
@@ -45,8 +42,7 @@ app.get('/', function (req, res) {
 });
 
 var renderSwaggerHtml = function(req, res) {
-  var fs = require('fs');
-  var response = fs.readFileSync(__dirname + '/../node_modules/swagger-ui/dist/index.html').toString();
+  var response = fs.readFileSync(  './node_modules/swagger-ui/dist/index.html').toString();
   response = response.replace("http://petstore.swagger.io/v2/swagger.json", "/api/swagger.json");
 
   res.set('Content-Type', 'text/html');
@@ -57,20 +53,22 @@ app.get("/swagger-ui/index.html", renderSwaggerHtml);
 app.get("/swagger-ui/", renderSwaggerHtml);
 
 app.get("/api/swagger.json", function(req, res) {
-  var fs = require('fs');
   res.set('Content-Type', 'application/json');
-  var response = JSON.parse(fs.readFileSync(__dirname + '/swagger.json').toString());
-  var info = JSON.parse(fs.readFileSync(__dirname + '/../package.json'));
+  var response = JSON.parse(fs.readFileSync( './src/swagger.json').toString());
+  var info = JSON.parse(fs.readFileSync('./package.json'));
   response.info.version = info.version || 'dev';
   res.send(JSON.stringify(response));
 });
 
 // Set /public as our static content dir
-app.use("/swagger-ui/", express.static(__dirname + "/../node_modules/swagger-ui/dist/"));
+app.use("/swagger-ui/", express.static("./node_modules/swagger-ui/dist/"));
 
 var server = http.createServer(app).listen(port, function() {
   console.log('twtxt registry listening on port ' + port);
-  storage.startUpdating();
+  if (process.env.START_UPDATING) {
+    const updateInterval = parseInt(process.env.UPDATING_INTERVAL || "900", 10);
+    storage.startUpdating(updateInterval);
+  }
 });
 
 storage.addUser("https://buckket.org/twtxt.txt", "buckket", function() {

@@ -1,0 +1,16 @@
+indexes:
+- kind: tweets
+  properties:
+    - name: mentions
+    - name: timestamp
+      direction: desc
+- kind: tweets
+  properties:
+    - name: stems
+    - name: timestamp
+      direction: desc
+- kind: tweets
+  properties:
+    - name: hashTags
+    - name: timestamp
+      direction: desc

@@ -1,6 +1,6 @@
-var moment = require('moment');
-var urlUtils = require('url');
-var md5 = require('md5');
+import moment from 'moment';
+import urlUtils from "url";
+import md5 from 'md5';
 
 var TwtxtTxt = function(url, nickname, body) {
   this.body = body;
@@ -116,4 +116,4 @@ TwtxtTxt.prototype.extractMentionsByRow = function(body) {
   return mentions;
 };
 
-module.exports = TwtxtTxt;
+export default TwtxtTxt;

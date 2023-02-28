@@ -4,19 +4,30 @@ A small registry server for twtxt, which allows to query for mentions and hash t
 
 ## Prerequisites
 
-* [elasticsearch](https://www.elastic.co/downloads/elasticsearch) server
-* memcached server
+* [gcp firestore in datastore mode](https://cloud.google.com/datastore/docs)
 * [npm](https://nodejs.org) installed
 
 ## Installation
 
+Set up the environment variable `GOOGLE_APPLICATION_CREDENTIALS` to a user (or use gcloud auth login) for a gcp datastore project.
+Replace `$GOOGLE_PROJECT_NAME` with your google project name.
+
 ``` console
 $ npm install
 $ export PORT=8080
-$ export ELASTICSEARCH_HOST=localhost
-$ export ELASTICSEARCH_PORT=9200
-$ export MEMCACHED_HOST=localhost
-$ export MEMCACHED_PORT=11211
+$ export START_UPDATING=1
+$ export UPDATING_INTERVAL=900
+$ gcloud datastore indexes create --project $GOOGLE_PROJECT_NAME index.yaml
+Configurations to update:
+
+descriptor:      [index.yaml]
+type:            [datastore indexes]
+target project:  [your-project-name]
+
+
+Do you want to continue (Y/n)?  y
+
+....done.     
 $ node src/server.js
 ```
 

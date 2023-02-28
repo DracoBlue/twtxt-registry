@@ -1,7 +1,8 @@
+import express from "express";
+import url from "url";
+
 var plainApi = function(storage) {
-  var express = require('express');
   var api = express.Router();
-  var url = require('url');
 
   var renderAuthorForTweet = function(tweet) {
     if (tweet.author_nickname) {
@@ -109,4 +110,4 @@ var plainApi = function(storage) {
   return api;
 };
 
-module.exports = plainApi;
+export default plainApi;
