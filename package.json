@@ -15,12 +15,12 @@
   "dependencies": {
     "@google-cloud/datastore": "^7.3.2",
     "dotenv": "^16.0.3",
-    "express": "4.9.8",
+    "express": "^4.18.2",
     "md5": "2.0.0",
-    "moment": "2.11.2",
+    "moment": "^2.29.4",
     "robots": "0.9.4",
     "stemmer": "^2.0.1",
-    "swagger-ui": "2.1.4"
+    "swagger-ui": "^4.16.1"
   },
   "author": "DracoBlue <JanS@DracoBlue.de>",
   "license": "MIT",
